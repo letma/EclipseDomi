@@ -12,6 +12,26 @@ https://docs.docker.com/engine/install/ubuntu/
 
 https://docs.docker.com/compose/install/
 
+## Optional - Benutzer zur Gruppe "docker" hinzufügen
+**_!!!!!_**
+**_Bei sudo usermod -a -G docker <username> unbedingt -a UND -G in den command schreiben, sonst werden die Gruppen nicht hinzugefügt, sondern überschrieben_**
+**_!!!!!_**
+
+Mit
+```
+sudo usermod -a -G docker <username>
+```
+den Benutzer zur Gruppe docker hinzufügen, somit erspart man sich das sudo vor jedem Befehl.
+Danach, reboot
+```
+reboot
+```
+Nach dem Neustart dann mit
+```
+groups
+```
+alle zugeordneten Gruppen anzeigen lassen, hier sollte "docker" dabei sein.
+
 ## 1 Danach ins Projektverzeichnis, bei mir "D:\Code\253\docker"
 Docker initialisieren (lädt linuxkernel, usw)
 ```
@@ -41,6 +61,17 @@ den Server starten
 sudo ./client.sh
 ```
 den Client starten
+
+## 3 Container Stoppen
+Mit 
+```
+sudo docker container list -a
+```
+den Namen des Containers rausfinden und zum Beispiel mit 
+```
+sudo docker stop oop2-server
+```
+den Server Container stoppen.
 
 ## When shit hits the fan
 Mit
