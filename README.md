@@ -1,35 +1,50 @@
+# Docker setup
 
-## 1. Protocol Compiler Installation
-Source: [https://github.com/protocolbuffers/protobuf/blob/master/README.md]
+## Ordner für Sensordaten erstellen
+Im Projektordner das Skript start.sh ausführen, erstellt Ordner und lädt die benötigten CSV-Dateien runter.
+```
+sudo ./start.sh
+```
 
-Protocol Buffers( download protobuf-java-3.13.0.tar.gz ) [https://github.com/protocolbuffers/protobuf/releases]
-![alt text](https://imgur.com/EwJgDll.png)
+Docker und Docker compose installieren:
 
-## 2. Install Maven
-[https://www.javahelps.com/2017/10/install-apache-maven-on-linux.html]
+https://docs.docker.com/engine/install/ubuntu/
 
-Check if it works: ``` mvn --version ```
+https://docs.docker.com/compose/install/
 
-## 3. Compile the Protocol
-Source: [https://github.com/protocolbuffers/protobuf/tree/master/java]
+## 1 Danach ins Projektverzeichnis, bei mir "D:\Code\253\docker"
+Docker initialisieren (lädt linuxkernel, usw)
+```
+sudo ./createDocker.sh
+```
+Danach können mit 
+```
+sudo docker image ls
+```
+alle erstellten images aufgelistet werden und mit 
+```
+sudo docker container list -a
+```
+der status jedes containers abgefragt werden.
 
-Run: ``` mvn test ```
+## 2 Build und execute
+Jetzt tipseln wir an unserem Programm und möchten die Änderungen compilieren und den Server/Client ausführen:
+```
+sudo ./mvn.sh
+```
+Buildet das Projekt und legt die target-folder an, in denen die jars liegen, welche für die server.sh oder client.sh benötigt werden.
+```
+sudo ./server.sh
+```
+den Server starten
+```
+sudo ./client.sh
+```
+den Client starten
 
-![alt text](https://imgur.com/E5ynFKM.png)
-
-If some tests fail, this library may not work correctly.
-
-Navigate to your protobuf directory/java ```/Downloads/protobuf-3.13.0/java```
-
-Run: ``` mvn install ```
-
-![alt text](https://imgur.com/KyxYcyk.png)
-
-If this compiles succesefully it means everything works and the project can be compiled.
-
-## 4. Setup Eclipse
-
-Pull the project, exclude target folder, because that you need to generate for yourself or follow this tutorial:
-```https://www.youtube.com/watch?v=JFzAe9SvNaU&list=PLI5t0u6ye3FGXJMh5kU2RvN0xrul67p7R```
-
-and use the same pom.xml and the same proto files to generate Grpc files.
+## When shit hits the fan
+Mit
+```
+sudo docker-compose down
+```
+werden alle Images gelöscht, danach zurück zu Schritt 1.
