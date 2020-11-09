@@ -47,10 +47,11 @@ public class GameController {
 				.setDomGameParameters(gameParameters).build();
 		
 		matchResponse = stub.newMatch(matchRequest);
-		matchToken = matchResponse.getMatchToken();
+		String matchID = matchResponse.getMatchToken();
+		setMatchToken(matchID); 
 		beginningPlayer = matchResponse.getBeginningPlayer();
 		
-		System.out.println("New Match: " + matchToken);
+		System.out.println("New Match: " + getMatchToken());
 		System.out.println("First player? " + ((beginningPlayer) ? "Yes" : "No"));
 	}
 	// Submit Turn
@@ -156,7 +157,7 @@ public class GameController {
 	
 	public static MatchIDPacket createMatchID()
 	{
-		MatchIDPacket matchIDPacket = MatchIDPacket.newBuilder().setUserToken(userToken).setMatchToken(matchToken).build();
+		MatchIDPacket matchIDPacket = MatchIDPacket.newBuilder().setUserToken(getUserToken()).setMatchToken(getMatchToken()).build();
 		return(matchIDPacket);
 	}
 	
@@ -180,6 +181,23 @@ public class GameController {
 	{
 		queryGameState();
 		return (currentStatus != netcode.Netcode.GameStatus.MATCH_NOT_STARTED);
+	}
+	// GETTERS
+	public static String getMatchToken()
+	{
+		return matchToken;
+	}
+	
+	public static String getUserToken()
+	{
+		return userToken;
+	}
+	
+	//SETTERS
+	
+	public static void setMatchToken(String matchID)
+	{
+		matchToken = matchID;
 	}
 
 }

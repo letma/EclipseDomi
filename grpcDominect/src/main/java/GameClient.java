@@ -24,7 +24,7 @@ public class GameClient {
     public static void main(String[] args) throws InterruptedException {
 
         // Insert your user token
-        String userToken = "";
+        String userToken = "34ceec80d3066857ae38e494e9d2a832567f50b79faa475b1a845c2a3db72e9d";
         int boardWidth = 10;
         int boardHeight = 10;
         
