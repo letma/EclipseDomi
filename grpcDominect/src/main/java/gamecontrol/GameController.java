@@ -108,9 +108,9 @@ public class GameController {
 		{
 			for (int x = 0; x < width; ++x)
 			{
-				System.out.println(data[x + y * width]);
+				System.out.print((char)data[x + y * width]);
 			}
-			System.out.println("\n");
+			System.out.print("\n");
 		}
 		System.out.println("-------------------------------\n");
 		printGameStatus();
@@ -165,7 +165,7 @@ public class GameController {
 	{
 		MatchIDPacket matchIDPacket = createMatchID();
 		GetTimeoutResponse timeoutResponse = stub.getTimeout(matchIDPacket);
-		System.out.println("Negotiated timeout: " + timeoutResponse.getTimeoutSeconds());
+		System.out.println("Negotiated timeout: " + timeoutResponse.getTimeoutSeconds() + " seconds\n");
 	}
 	
 	public static void queryOpponentInfo()
