@@ -14,16 +14,24 @@ import com.dominect.grpc.Dominect.GameParameter;
 import com.dominect.grpc.Dominect.GameState;
 import com.dominect.grpc.Dominect.GameTurn;
 
+import gameboard.Position;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 public class GameController {
 	
 	private static String userToken;
 	private static String matchToken;
-	
+	static ArrayList<Positions> positions = new ArrayList<>();
 	static GameComGrpc.GameComBlockingStub stub;
 	static GameStatus currentStatus;
 	static GameState currentState;
-	
-	
+	static Boolean beginningPlayer;
+	static int x1 = 0;
+	static int y1 = 0;
+	static int x2 = 0;
+	static int y2 = 0;
 	// Constructor
 	public GameController(String userToken, GameComGrpc.GameComBlockingStub stub)
 	{
@@ -38,7 +46,7 @@ public class GameController {
 		MatchRequest matchRequest;
 		MatchResponse matchResponse;
 		String matchToken;
-		Boolean beginningPlayer;
+		
 		
 		gameParameters = GameParameter.newBuilder().setBoardWidth(width).setBoardHeight(height).build();
 		matchRequest = MatchRequest.newBuilder()
@@ -55,14 +63,16 @@ public class GameController {
 		System.out.println("First player? " + ((beginningPlayer) ? "Yes" : "No"));
 	}
 	// Submit Turn
-	public static void submitTurn(GameTurn turn)
+	public static TurnResponse submitTurn(GameTurn turn)
 	{
 		TurnRequest turnRequest;
 		TurnResponse turnResponse;
 		turnRequest = TurnRequest.newBuilder().setMatchId(createMatchID()).setDomGameTurn(turn).build();
 		turnResponse = stub.submitTurn(turnRequest);
-		//TODO: Expand error handling try/catch
 		System.out.println("Turn Status: " + turnResponse.getTurnStatusValue());
+		return turnResponse;
+		//TODO: Expand error handling try/catch
+		
 	}
 	
 	public static void printGameStatus()
@@ -99,7 +109,8 @@ public class GameController {
 	{
 		//TODO: This needs solution???
 		queryGameState();
-		
+		int value;
+		boolean firstCord = true;
 		int width = currentState.getBoardWidth();
 		int height = currentState.getBoardHeight();
 		byte[] data = currentState.getBoardData().toByteArray();
@@ -108,11 +119,27 @@ public class GameController {
 		{
 			for (int x = 0; x < width; ++x)
 			{
+				value = data[x + y * width];
+				if(value == 49 || value == 50)
+				{
+					if(firstCord)
+					{
+						x1 = x;
+						y1 = y;
+						firstCord = false;
+					}
+					else if (!firstCord)
+					{
+						x2 = x;
+						y2 = y;
+					}
+				}
 				System.out.print((char)data[x + y * width]);
 			}
 			System.out.print("\n");
 		}
 		System.out.println("-------------------------------\n");
+		positions.add(new Positions(x1,y1,x2,y2));
 		printGameStatus();
 	}
 	
@@ -193,11 +220,21 @@ public class GameController {
 		return userToken;
 	}
 	
+	public static Boolean getBeginningPlayer()
+	{
+		return beginningPlayer;
+	}
+	
 	//SETTERS
 	
 	public static void setMatchToken(String matchID)
 	{
 		matchToken = matchID;
+	}
+	
+	public static void setBeginningPlayer(boolean ply)
+	{
+		beginningPlayer = ply;
 	}
 
 }
