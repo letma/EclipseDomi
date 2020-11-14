@@ -69,9 +69,26 @@ public class GameController {
 		TurnResponse turnResponse;
 		turnRequest = TurnRequest.newBuilder().setMatchId(createMatchID()).setDomGameTurn(turn).build();
 		turnResponse = stub.submitTurn(turnRequest);
-		System.out.println("Turn Status: " + turnResponse.getTurnStatusValue());
+		switch(turnResponse.getTurnStatusValue())
+		{
+		case netcode.Netcode.TurnStatus.OK_VALUE:
+			System.out.println("Turn was OK!\n");
+			break;
+		case netcode.Netcode.TurnStatus.INVALID_TURN_VALUE:
+			System.out.println("Turn was invalid!\n");
+			break;
+		case netcode.Netcode.TurnStatus.NOT_YOUR_TURN_VALUE:
+			System.out.println("Not your turn!\n");
+			break;
+		case netcode.Netcode.TurnStatus.MATCH_OVER_VALUE:
+			System.out.println("Match Over!\n");
+			printGameStatus();
+			break;
+		default:
+			assert(false);
+		}
+		
 		return turnResponse;
-		//TODO: Expand error handling try/catch
 		
 	}
 	
