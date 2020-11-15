@@ -13,12 +13,12 @@ public class Positions {
     	this.y2 = y2;
     }
     
-    @Override public boolean equals(Object other) {
-        return other instanceof Position
-            && ((Position)other).getX1() == getX1()
-            && ((Position)other).getY1() == getY1()
-            && ((Position)other).getX2() == getX2()
-            && ((Position)other).getY2() == getY2();
+    public boolean equals(Positions other) {
+        return other instanceof Positions
+            && (other).getX1() == getX1()
+            && (other).getY1() == getY1()
+            && (other).getX2() == getX2()
+            && (other).getY2() == getY2();
     }
 
     // GETTERS 

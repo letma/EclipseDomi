@@ -131,6 +131,7 @@ public class GameController {
 		int width = currentState.getBoardWidth();
 		int height = currentState.getBoardHeight();
 		byte[] data = currentState.getBoardData().toByteArray();
+		int num = (getBeginningPlayer()) ? 49 : 50;
 		System.out.println("-------------------------------\n");
 		for (int y = 0; y < height; ++y)
 		{
@@ -145,7 +146,7 @@ public class GameController {
 						y1 = y;
 						firstCord = false;
 					}
-					else if (!firstCord)
+					else
 					{
 						x2 = x;
 						y2 = y;
@@ -226,6 +227,27 @@ public class GameController {
 		queryGameState();
 		return (currentStatus != netcode.Netcode.GameStatus.MATCH_NOT_STARTED);
 	}
+	
+	public static ArrayList<Positions>  getAllPossiblePositions() {
+		int width = currentState.getBoardWidth();
+		int height = currentState.getBoardHeight();
+        ArrayList<Positions> allPositions = new ArrayList<>(width*height);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+            	if(x+1 < width)
+            	{
+            		allPositions.add(new Positions(x, y, x + 1, y));
+            	}
+            	if(y+1 < height)
+            	{
+            		allPositions.add(new Positions(x, y, x, y + 1));
+            	}
+            	
+            }
+
+        }
+        return allPositions;
+    }
 	// GETTERS
 	public static String getMatchToken()
 	{

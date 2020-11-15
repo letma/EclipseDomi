@@ -24,24 +24,12 @@ public class GameClient {
 		client.showGameState();
 		GameTurn first = GameTurn.newBuilder().setX1(1).setY1(2).setX2(1).setY2(3).build();
 		TurnResponse odg = client.submitTurn(first);
-		client.showGameState();
+
 		for(Positions d: client.positions)
 		{
 			System.out.println("X1: " + d.getX1() + " Y1: " + d.getY1() + " X2: " + d.getX2() + " Y2: " + d.getY2() + "\n");
 		}
-//		if(client.getBeginningPlayer())
-//		{
 
-		
-//		}
-//		else
-//		{
-//			GameTurn sec = GameTurn.newBuilder().setX1(1).setY1(2).setX2(1).setY2(3).build();
-//			TurnResponse odg = client.submitTurn(sec);
-//		}
-//		client.showGameState();
-
-		
 		//TODO: Now we can start to implement AI
 		
 	}
