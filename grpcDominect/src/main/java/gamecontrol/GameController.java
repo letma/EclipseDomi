@@ -19,11 +19,13 @@ import gameboard.Position;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 public class GameController {
 	
 	private static String userToken;
 	private static String matchToken;
 	static ArrayList<Positions> positions = new ArrayList<>();
+	static ArrayList<Positions> allPositions;
 	static GameComGrpc.GameComBlockingStub stub;
 	static GameStatus currentStatus;
 	static GameState currentState;
@@ -58,7 +60,6 @@ public class GameController {
 		String matchID = matchResponse.getMatchToken();
 		setMatchToken(matchID); 
 		beginningPlayer = matchResponse.getBeginningPlayer();
-		
 		System.out.println("New Match: " + getMatchToken());
 		System.out.println("First player? " + ((beginningPlayer) ? "Yes" : "No"));
 	}
@@ -69,7 +70,13 @@ public class GameController {
 		TurnResponse turnResponse;
 		turnRequest = TurnRequest.newBuilder().setMatchId(createMatchID()).setDomGameTurn(turn).build();
 		turnResponse = stub.submitTurn(turnRequest);
-		switch(turnResponse.getTurnStatusValue())
+		printTurnStatus(turnResponse.getTurnStatusValue());
+		return turnResponse;
+		
+	}
+	public static void printTurnStatus(int status)
+	{
+		switch(status)
 		{
 		case netcode.Netcode.TurnStatus.OK_VALUE:
 			System.out.println("Turn was OK!\n");
@@ -87,9 +94,6 @@ public class GameController {
 		default:
 			assert(false);
 		}
-		
-		return turnResponse;
-		
 	}
 	
 	public static void printGameStatus()
@@ -124,21 +128,22 @@ public class GameController {
 	
 	public static void showGameState()
 	{
-		//TODO: This needs solution???
 		queryGameState();
 		int value;
 		boolean firstCord = true;
 		int width = currentState.getBoardWidth();
 		int height = currentState.getBoardHeight();
 		byte[] data = currentState.getBoardData().toByteArray();
-		int num = (getBeginningPlayer()) ? 49 : 50;
+		// opponent gets always other value
+		int num = (getBeginningPlayer()) ? 50 : 49;
 		System.out.println("-------------------------------\n");
 		for (int y = 0; y < height; ++y)
 		{
 			for (int x = 0; x < width; ++x)
 			{
 				value = data[x + y * width];
-				if(value == 49 || value == 50)
+				// we check that value for an opponent and than check if it's inserted in played positions
+				if(value == num && (!checkCoordination(x, y)))
 				{
 					if(firstCord)
 					{
@@ -157,10 +162,62 @@ public class GameController {
 			System.out.print("\n");
 		}
 		System.out.println("-------------------------------\n");
-		positions.add(new Positions(x1,y1,x2,y2));
+		System.out.println("Found: " + y1 + x1 + y2 + x2);
+		Positions newEntry = new Positions(x1,y1,x2,y2);
+		checkPosition(newEntry);
 		printGameStatus();
 	}
+	// Check if the position was already inserted in an array!
+	public static boolean checkCoordination(int x, int y)
+	{
+		Iterator<Positions> it = positions.iterator();
+		while(it.hasNext())
+		{
+			Positions position = it.next();
+			if((position.getX1() == x && position.getY1() == y) 
+			|| (position.getX2() == x && position.getY2() == y))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	// check if the given position is a valid move in all possible positions.
+	// IF it is add that position to played positions and remove played position
+	// from all possible positions
+	public static void checkPosition(Positions newEntry)
+	{
+		allPositions = getAllPossiblePositions();
+		Iterator<Positions> it = allPositions.iterator();
+		while(it.hasNext())
+		{
+			Positions position = it.next();
+			if(position.equals(newEntry))
+			{
+				System.out.println("Position  Y1: " + position.getY1() + " X1: " + position.getX1() +  " Y2: " 
+			+ position.getY2() + " X2: " + position.getX2() +  " is valid\n");
+				positions.add(position);
+				it.remove();
+			}
+		}
+	}
+	// check if any coordination of the given position intersects in ANY way
+	// with the Position we want to play ( additional check so that we don't get invalid move ) 
+	public static boolean checkIntersectPosition(Positions newEntry)
+	{
+		Iterator<Positions> it = positions.iterator();
+		while(it.hasNext())
+		{
+			Positions position = it.next();
+			if(position.intersects(newEntry))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 	
+
 	public static void queryGameState()
 	{
 		//TODO: Probly need some pointer shit or something
