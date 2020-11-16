@@ -18,7 +18,7 @@ public class MyGrpcClient {
         String matrNr = "1231661";
         String secret = "biliciku";
 
-
+        //Kommentar laut Thomas
         ManagedChannel channel = ManagedChannelBuilder.forAddress("129.27.202.46", 80)
                 .usePlaintext()
                 .build();
